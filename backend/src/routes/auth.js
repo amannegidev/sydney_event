@@ -9,18 +9,21 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/auth/failed" }),
   (req, res) => {
-    // ✅ Save session before redirecting to ensure cookie is set
-    req.session.save((err) => {
-      if (err) {
-        console.error("Session save error:", err);
-        return res.redirect(process.env.CLIENT_URL + "?error=session");
-      }
-      res.redirect(process.env.CLIENT_URL || "http://localhost:5173");
-    });
+    console.log("✅ Callback hit - authenticated user:", req.user);
+    console.log("✅ Session ID:", req.sessionID);
+    
+    // Simply redirect - Passport handles session automatically
+    const redirectUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    console.log("✅ Redirecting to:", redirectUrl);
+    res.redirect(redirectUrl);
   }
 );
 
 router.get("/me", (req, res) => {
+  console.log("🔍 /auth/me - isAuthenticated:", req.isAuthenticated?.());
+  console.log("🔍 /auth/me - req.user:", req.user);
+  console.log("🔍 /auth/me - sessionID:", req.sessionID);
+  
   if (req.isAuthenticated && req.isAuthenticated()) {
     return res.json(req.user);
   }
