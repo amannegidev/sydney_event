@@ -9,21 +9,11 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/auth/failed" }),
   (req, res) => {
-    console.log("✅ Callback hit - authenticated user:", req.user);
-    console.log("✅ Session ID:", req.sessionID);
-    
-    // Simply redirect - Passport handles session automatically
-    const redirectUrl = process.env.CLIENT_URL || "http://localhost:5173";
-    console.log("✅ Redirecting to:", redirectUrl);
-    res.redirect(redirectUrl);
+    res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/admin`);
   }
 );
 
 router.get("/me", (req, res) => {
-  console.log("🔍 /auth/me - isAuthenticated:", req.isAuthenticated?.());
-  console.log("🔍 /auth/me - req.user:", req.user);
-  console.log("🔍 /auth/me - sessionID:", req.sessionID);
-  
   if (req.isAuthenticated && req.isAuthenticated()) {
     return res.json(req.user);
   }
@@ -33,10 +23,7 @@ router.get("/me", (req, res) => {
 router.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
-    // ✅ Save session after logout
-    req.session.save(() => {
-      res.redirect(process.env.CLIENT_URL || "http://localhost:5173");
-    });
+    res.redirect(process.env.CLIENT_URL || "http://localhost:5173");
   });
 });
 
