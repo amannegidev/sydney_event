@@ -9,7 +9,14 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/auth/failed" }),
   (req, res) => {
-    res.redirect(process.env.CLIENT_URL || "http://localhost:5173");
+    // ✅ Save session before redirecting to ensure cookie is set
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        return res.redirect(process.env.CLIENT_URL + "?error=session");
+      }
+      res.redirect(process.env.CLIENT_URL || "http://localhost:5173");
+    });
   }
 );
 
@@ -23,7 +30,10 @@ router.get("/me", (req, res) => {
 router.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
-    res.redirect(process.env.CLIENT_URL || "http://localhost:5173");
+    // ✅ Save session after logout
+    req.session.save(() => {
+      res.redirect(process.env.CLIENT_URL || "http://localhost:5173");
+    });
   });
 });
 

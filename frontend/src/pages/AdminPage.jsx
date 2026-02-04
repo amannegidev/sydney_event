@@ -5,7 +5,7 @@ import AdminTable from "../components/AdminTable.jsx";
 import PreviewPanel from "../components/PreviewPanel.jsx";
 import { fetchAdminEvents, importEvent, fetchMe } from "../lib/api.js";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 const AdminPage = () => {
   const [filters, setFilters] = useState({
