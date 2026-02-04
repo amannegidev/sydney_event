@@ -1,0 +1,31 @@
+{
+  "name": "sydney-events-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Sydney Events Aggregator API",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "scrape": "node src/scripts/runScrape.js",
+    "seed": "node src/scripts/seedEvents.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "cheerio": "^1.0.0-rc.12",
+    "connect-mongo": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.17.3",
+    "langchain": "^0.2.14",
+    "@langchain/ollama": "^0.1.0",
+    "mongoose": "^8.4.1",
+    "node-cron": "^3.0.3",
+    "node-telegram-bot-api": "^0.66.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
