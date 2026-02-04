@@ -26,12 +26,12 @@ app.use(
   })
 );
 app.use(express.json());
-
+// Session (ensure saveUninitialized true so session cookie is created)
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "dev_secret",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
     cookie: {
       httpOnly: true,
@@ -43,6 +43,12 @@ app.use(
   })
 );
 
+// Simple request logger for debugging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - SessionID: ${req.sessionID}`);
+  next();
+});
+
 configurePassport({
   googleClientId: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -53,28 +59,21 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get("/health", (_req, res) => {
-      app.use(
-        session({
-          secret: process.env.SESSION_SECRET || "dev_secret",
-          resave: false,
-          saveUninitialized: true,
-          store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
-          cookie: {
-            httpOnly: true,
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            secure: process.env.NODE_ENV === "production",
-            path: "/",
-            maxAge: 1000 * 60 * 60 * 24,
-          },
-        })
-      );
+  res.json({ status: "ok" });
+});
 
-      app.use((req, res, next) => {
-        console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - SessionID: ${req.sessionID}`);
-        next();
-      });
+app.use("/api", publicRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/auth", authRoutes);
 
-      configurePassport({
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  res.status(500).json({ message: "Server error" });
+});
+
+const start = async () => {
+  await connectDb(process.env.MONGODB_URI);
+  app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
 
